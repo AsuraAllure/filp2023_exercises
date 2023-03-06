@@ -17,25 +17,31 @@ class Game(controller: GameController) {
     * @param number загаданное число
     */
   def play(number: Int): Unit = {
-    var flag          = true
-    var input: String = ""
-    while (flag) {
+    do {
       controller.askNumber()
-      input = controller.nextLine()
-      if (input == GameController.IGiveUp) {
-        controller.giveUp(number)
-        flag = false
-      } else if (!input.forall(_.isDigit)) {
-        controller.wrongInput()
-      } else {
-        if (input.toInt == number) {
-          controller.guessed()
-          flag = false
-        } else if (input.toInt < number)
-          controller.numberIsBigger()
-        else
-          controller.numberIsSmaller()
+    } while (
+      controller.nextLine() match {
+        case GameController.IGiveUp =>
+          controller.giveUp(number)
+          false
+        case input =>
+          if (!input.forall(_.isDigit)) {
+            controller.wrongInput()
+            true
+          } else {
+            input.toInt.compare(number) match {
+              case 1 =>
+                controller.numberIsSmaller()
+                true
+              case 0 =>
+                controller.guessed()
+                false
+              case -1 =>
+                controller.numberIsBigger()
+                true
+            }
+          }
       }
-    }
+    )
   }
 }
