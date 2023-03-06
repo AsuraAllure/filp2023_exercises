@@ -9,7 +9,7 @@ object Counter {
     */
   def countWords(text: String): Map[String, Int] = {
     val reg        = raw"[^\s.,!?:\n\t\r()]+".r
-    val listOfWord = reg.findAllMatchIn(text).toList.map(matchObject => matchObject.toString().toLowerCase())
+    val listOfWord = reg.findAllMatchIn(text).toList.map(matchObj => matchObj.toString().toLowerCase())
     val wordMap    = mutable.Map[String, Int]()
     for (word <- listOfWord) {
       if (wordMap.keySet.contains(word)) {
