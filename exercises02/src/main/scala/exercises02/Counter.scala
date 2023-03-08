@@ -11,11 +11,11 @@ object Counter {
     val reg        = raw"[^\s.,!?:\n\t\r()]+".r
     val listOfWord = reg.findAllMatchIn(text).toList.map(matchObj => matchObj.toString().toLowerCase())
     val wordMap    = mutable.Map[String, Int]()
-    for (word <- listOfWord) {
-      if (wordMap.keySet.contains(word)) {
-        wordMap(word) = wordMap(word) + 1
+    for (wrd <- listOfWord) {
+      if (wordMap.keySet.contains(wrd)) {
+        wordMap(wrd) = wordMap(wrd) + 1
       } else {
-        wordMap += (word -> 1)
+        wordMap += (wrd -> 1)
       }
     }
     wordMap.toMap
