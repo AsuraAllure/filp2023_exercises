@@ -57,6 +57,10 @@ class VectorTest extends org.scalatest.wordspec.AnyWordSpec {
       assert(Vector.sum(List(a, b, new Vector(10, 10))) == new Vector(40.4, 53.4))
     }
 
+    "return zero sum on empty list" in {
+      assert(Vector.sum(List.empty) == new Vector(0, 0))
+    }
+
     "support unapply operation" in {
       val m =
         a match {
@@ -68,6 +72,11 @@ class VectorTest extends org.scalatest.wordspec.AnyWordSpec {
 
     "support equals operation" in {
       assert(new Vector(10.0, 20.0) == new Vector(10.0, 20.0))
+    }
+
+    "return false on equals with incompatible types" in {
+      assert(new Vector(10.0, 20.0) != 0)
+      assert(new Vector(10.0, 20.0) != "Vector(10.0, 20.0)")
     }
   }
 }
