@@ -34,11 +34,11 @@ class Game(controller: GameController) {
           controller.askNumber()
           playing(number, controller.nextLine())
         }
-      case inpNumber =>
-        if (inpNumber.get == number) {
+      case inputNumber =>
+        if (inputNumber.get == number) {
           controller.guessed()
         } else {
-          if (inpNumber.get < number) controller.numberIsBigger() else controller.numberIsSmaller()
+          if (inputNumber.get < number) controller.numberIsBigger() else controller.numberIsSmaller()
           controller.askNumber()
           playing(number, controller.nextLine())
         }
