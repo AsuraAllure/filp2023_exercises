@@ -1,24 +1,16 @@
 package exercises02
-
-import scala.collection.mutable
 object Counter {
+  private final val wordRegex        = raw"[^\s.,!?:\n\t\r()]+".r
+  private final val englishWordRegex = raw"[^\s.,!?:\n\t\r()а-яА-Я]+".r
+  private final val numberRegex      = raw"\d+[.,]?[\d+]?".r
 
   /**
     * Посчитать количество вхождений слов в тексте
     * слово отделено символами [\s.,!?:\n\t\r]
     */
   def countWords(text: String): Map[String, Int] = {
-    val reg        = raw"[^\s.,!?:\n\t\r()]+".r
-    val listOfWord = reg.findAllMatchIn(text).toList.map(matchObj => matchObj.toString().toLowerCase())
-    val wordMap    = mutable.Map[String, Int]()
-    for (wrd <- listOfWord) {
-      if (wordMap.keySet.contains(wrd)) {
-        wordMap(wrd) = wordMap(wrd) + 1
-      } else {
-        wordMap += (wrd -> 1)
-      }
-    }
-    wordMap.toMap
+    val listOfWord = wordRegex.findAllMatchIn(text).toList.map(matchObj => matchObj.toString().toLowerCase())
+    listOfWord.groupMapReduce((b: String) => b)(_ => 1)((a: Int, b: Int) => a + b)
   }
 
   /**
@@ -26,17 +18,9 @@ object Counter {
     * слово отделено символами [\s.,!?:\n\t\r]
     */
   def countEnglishWords(text: String): Map[String, Int] = {
-    val reg        = raw"[^\s.,!?:\n\t\r()а-яА-Я]+".r
-    val listOfWord = reg.findAllMatchIn(text).toList.map(matchObject => matchObject.toString().toLowerCase())
-    val wordMap    = mutable.Map[String, Int]()
-    for (word <- listOfWord) {
-      if (wordMap.keySet.contains(word)) {
-        wordMap(word) = wordMap(word) + 1
-      } else {
-        wordMap += (word -> 1)
-      }
-    }
-    wordMap.toMap
+    val listOfWord =
+      englishWordRegex.findAllMatchIn(text).toList.map(matchObject => matchObject.toString().toLowerCase())
+    listOfWord.groupMapReduce((b: String) => b)(_ => 1)((a: Int, b: Int) => a + b)
   }
 
   /**
@@ -44,17 +28,7 @@ object Counter {
     * число отделено символами [\s!?:\n\t\r]
     */
   def countNumbers(text: String): Map[String, Int] = {
-    val reg        = raw"\d+[.,]?[\d+]?".r
-    val listOfWord = reg.findAllMatchIn(text).toList.map(matchObject => matchObject.toString().toLowerCase())
-    val wordMap    = mutable.Map[String, Int]()
-    for (word <- listOfWord) {
-      if (wordMap.keySet.contains(word)) {
-        wordMap(word) = wordMap(word) + 1
-      } else {
-        wordMap += (word -> 1)
-      }
-    }
-    wordMap.toMap
+    val listOfWord = numberRegex.findAllMatchIn(text).toList.map(matchObject => matchObject.toString().toLowerCase())
+    listOfWord.groupMapReduce((b: String) => b)(_ => 1)((a: Int, b: Int) => a + b)
   }
-
 }
