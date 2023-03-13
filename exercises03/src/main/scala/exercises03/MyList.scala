@@ -17,5 +17,16 @@ object MyList {
     case Cons(head, tail) => summing(tail, result + head)
   }
 
-  def reverse[A](list: MyList[A]): MyList[A] = ???
+  def reverse[A](list: MyList[A]): MyList[A] = reverseTailRec(list, Nil)
+
+  @tailrec
+  private def reverseTailRec[A](list: MyList[A], accumulating: MyList[A]): MyList[A] = list match {
+    case Nil => Nil
+    case Cons(head, tail) =>
+      if (tail == Nil) {
+        Cons(head, accumulating)
+      } else {
+        reverseTailRec(tail, Cons(head, accumulating))
+      }
+  }
 }
