@@ -24,7 +24,7 @@ object MyList {
     def reverseTailRec[A](list: MyList[A], accumulating: MyList[A]): MyList[A] = list match {
       case Nil => accumulating
       case Cons(head, tail) =>
-          reverseTailRec(tail, Cons(head, accumulating))
+        reverseTailRec(tail, Cons(head, accumulating))
 
     }
     reverseTailRec(list, Nil)
