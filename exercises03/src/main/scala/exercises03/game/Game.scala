@@ -9,10 +9,10 @@ object Game {
         WrongInput
       }
     case inputNumber =>
-      if (inputNumber.get == number) {
+      if (inputNumber.getOrElse(-1) == number) {
         Guessed
       } else {
-        if (inputNumber.get < number)
+        if (inputNumber.getOrElse(-1) < number)
           NumberIsBigger
         else
           NumberIsSmaller
