@@ -30,8 +30,7 @@ object Game {
       }
 
   def completed(state: State): Boolean = state match {
-    case GiveUp  => true
-    case Guessed => true
-    case _       => false
+    case GiveUp | Guessed => true
+    case _                => false
   }
 }
