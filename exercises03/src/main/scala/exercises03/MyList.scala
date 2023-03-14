@@ -10,15 +10,14 @@ case object Nil extends MyList[Nothing]
 
 object MyList {
 
-  def sum(list: MyList[Int]): Int ={
+  def sum(list: MyList[Int]): Int = {
     @tailrec
     def summing(list: MyList[Int], result: Int): Int = list match {
-      case Nil => result
+      case Nil              => result
       case Cons(head, tail) => summing(tail, result + head)
     }
     summing(list, 0)
   }
-
 
   def reverse[A](list: MyList[A]): MyList[A] = {
     @tailrec
@@ -33,6 +32,5 @@ object MyList {
     }
     reverseTailRec(list, Nil)
   }
-
 
 }
