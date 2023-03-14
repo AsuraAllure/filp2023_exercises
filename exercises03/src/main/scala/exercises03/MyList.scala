@@ -22,13 +22,10 @@ object MyList {
   def reverse[A](list: MyList[A]): MyList[A] = {
     @tailrec
     def reverseTailRec[A](list: MyList[A], accumulating: MyList[A]): MyList[A] = list match {
-      case Nil => Nil
+      case Nil => accumulating
       case Cons(head, tail) =>
-        if (tail == Nil) {
-          Cons(head, accumulating)
-        } else {
           reverseTailRec(tail, Cons(head, accumulating))
-        }
+
     }
     reverseTailRec(list, Nil)
   }
