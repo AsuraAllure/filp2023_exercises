@@ -11,55 +11,39 @@ class Calculator[T: Integral] {
     case Val(v1) => Success(v1)
 
     case Mul(left, right) =>
-      (left, right) match {
-        case (Val(v1), Val(v2)) => Success(v1 * v2)
-        case _ =>
-          (calculate(left), calculate(right)) match {
-            case (Success(v1), Success(v2)) => Success(v1 * v2)
-            case _ => DivisionByZero
-          }
-
+      (calculate(left), calculate(right)) match {
+        case (Success(v1), Success(v2)) => Success(v1 * v2)
+        case _                          => DivisionByZero
       }
+
     case Div(left, right) =>
-      (left, right) match {
-        case (Val(v1), Val(v2)) =>
-          if (isZero(v2)) DivisionByZero else Success(v1 / v2)
-        case _ =>
-          (calculate(left), calculate(right)) match {
-            case (Success(v1), Success(v2)) => Success(v1 / v2)
-            case _ => DivisionByZero
-          }
+      (calculate(left), calculate(right)) match {
+        case (Success(v1), Success(v2)) =>
+          if (!isZero(v2))
+            Success(v1 / v2)
+          else
+            DivisionByZero
+        case _ => DivisionByZero
       }
     case Plus(left, right) =>
-      (left, right) match {
-        case (Val(v1), Val(v2)) => Success(v1 + v2)
-        case _ =>
-          (calculate(left), calculate(right)) match {
-            case (Success(v1), Success(v2)) => Success(v1 + v2)
-            case _ => DivisionByZero
-          }
-
+      (calculate(left), calculate(right)) match {
+        case (Success(v1), Success(v2)) => Success(v1 + v2)
+        case _                          => DivisionByZero
       }
     case Minus(left, right) =>
-      (left, right) match {
-        case (Val(v1), Val(v2)) => Success(v1 - v2)
-        case _ =>
-          (calculate(left), calculate(right)) match {
-            case (Success(v1), Success(v2)) => Success(v1 - v2)
-            case _ => DivisionByZero
-          }
+      (calculate(left), calculate(right)) match {
+        case (Success(v1), Success(v2)) => Success(v1 - v2)
+        case _                          => DivisionByZero
       }
-    case If(iff, cond, left, right) =>
-      if (cond match {
-        case Val(v1) => iff(v1)
-        case expres =>
-          calculate(expres) match {
-            case Success(v) => iff(v)
-          }
-      })
-        calculate(left)
-      else
-        calculate(right)
 
+    case If(iff, cond, left, right) =>
+      calculate(cond) match {
+        case DivisionByZero => DivisionByZero
+        case Success(value) =>
+          if (iff(value))
+            calculate(left)
+          else
+            calculate(right)
+      }
   }
 }
