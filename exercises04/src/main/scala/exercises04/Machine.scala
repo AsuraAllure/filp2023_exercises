@@ -19,5 +19,17 @@ object Machine {
   }
 
   @scala.annotation.tailrec
-  def run(machine: Machine, inputs: List[Input]): (Machine, List[Input]) = ???
+  def run(machine: Machine, inputs: List[Input]): (Machine, List[Input]) = (machine, inputs.headOption) match {
+    case (Machine(_, 0, _), _) =>
+      (machine, inputs)
+    case (Machine(_, _, _), None) =>
+      (machine, inputs)
+
+    case (Machine(true, candies, coins), Some(Input.Coin)) =>
+      run(Machine(locked = false, candies, coins + 1), inputs.drop(1))
+    case (Machine(false, candies, coins), Some(Input.Turn)) =>
+      run(Machine(locked = true, candies - 1, coins), inputs.drop(1))
+    case _ =>
+      run(machine, inputs.drop(1))
+  }
 }
