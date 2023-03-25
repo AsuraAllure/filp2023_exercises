@@ -27,7 +27,7 @@ class Calculator[T: Integral] {
     case Div(left, right) =>
       evalution(calculate(left), calculate(right), { (arg1, arg2) =>
         if (!isZero(arg2))
-          Success(arg1 + arg2)
+          Success(arg1 / arg2)
         else
           DivisionByZero
       })
