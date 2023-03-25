@@ -7,43 +7,45 @@ class Calculator[T: Integral] {
   def isZero(t: T): Boolean =
     t == implicitly[Integral[T]].zero
 
+  def evalution(r1: Result[T], r2: Result[T], f: (T, T) => Result[T]): Result[T] = (r1, r2) match {
+    case (Success(v1), Success(v2)) => f(v1, v2)
+    case _                          => DivisionByZero
+  }
   def calculate(expr: Expr[T]): Result[T] = expr match {
     case Val(v1) => Success(v1)
 
-    case Mul(left, right) =>
-      (calculate(left), calculate(right)) match {
-        case (Success(v1), Success(v2)) => Success(v1 * v2)
-        case _                          => DivisionByZero
-      }
-
-    case Div(left, right) =>
-      (calculate(left), calculate(right)) match {
-        case (Success(v1), Success(v2)) =>
-          if (!isZero(v2))
-            Success(v1 / v2)
-          else
-            DivisionByZero
-        case _ => DivisionByZero
-      }
-    case Plus(left, right) =>
-      (calculate(left), calculate(right)) match {
-        case (Success(v1), Success(v2)) => Success(v1 + v2)
-        case _                          => DivisionByZero
-      }
-    case Minus(left, right) =>
-      (calculate(left), calculate(right)) match {
-        case (Success(v1), Success(v2)) => Success(v1 - v2)
-        case _                          => DivisionByZero
-      }
-
     case If(iff, cond, left, right) =>
       calculate(cond) match {
-        case DivisionByZero => DivisionByZero
         case Success(value) =>
           if (iff(value))
             calculate(left)
           else
             calculate(right)
+        case err => err
       }
+
+    case Div(left, right) =>
+      evalution(calculate(left), calculate(right), { (arg1, arg2) =>
+        if (!isZero(arg2))
+          Success(arg1 + arg2)
+        else
+          DivisionByZero
+      })
+
+    case Mul(left, right) =>
+      evalution(calculate(left), calculate(right), { (arg1, arg2) =>
+        Success(arg1 * arg2)
+      })
+
+    case Plus(left, right) =>
+      evalution(calculate(left), calculate(right), { (arg1, arg2) =>
+        Success(arg1 + arg2)
+      })
+
+    case Minus(left, right) =>
+      evalution(calculate(left), calculate(right), { (arg1, arg2) =>
+        Success(arg1 - arg2)
+      })
+
   }
 }

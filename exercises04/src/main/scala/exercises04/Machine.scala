@@ -19,17 +19,16 @@ object Machine {
   }
 
   @scala.annotation.tailrec
-  def run(machine: Machine, inputs: List[Input]): (Machine, List[Input]) = (machine, inputs.headOption) match {
-    case (Machine(_, 0, _), _) =>
-      (machine, inputs)
-    case (Machine(_, _, _), None) =>
-      (machine, inputs)
-
-    case (Machine(true, candies, coins), Some(Input.Coin)) =>
-      run(Machine(locked = false, candies, coins + 1), inputs.drop(1))
-    case (Machine(false, candies, coins), Some(Input.Turn)) =>
-      run(Machine(locked = true, candies - 1, coins), inputs.drop(1))
-    case _ =>
-      run(machine, inputs.drop(1))
+  def run(machine: Machine, inputs: List[Input]): (Machine, List[Input]) = inputs match {
+    case head :: tail =>
+      head match {
+        case head if machine.candies == 0 => (machine, head :: tail)
+        case Input.Coin if machine.locked =>
+          run(machine.copy(locked = false, coins = machine.coins + 1), tail)
+        case Input.Turn if !machine.locked =>
+          run(machine.copy(locked = true, candies = machine.candies - 1), tail)
+        case _ => run(machine, tail)
+      }
+    case _ => (machine, inputs)
   }
 }
