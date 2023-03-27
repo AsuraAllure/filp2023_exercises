@@ -18,18 +18,15 @@ object Combinators {
   def react(ipt: String): String = {
     // Через fold
     ipt.foldLeft("")((holdString, newChar) =>
-      if (holdString.nonEmpty) {
-        if ((holdString.lastOption.contains('F') && newChar == 'f') ||
-            (holdString.lastOption.contains('f') && newChar == 'F') ||
-            (holdString.lastOption.contains('g') && newChar == 'G') ||
-            (holdString.lastOption.contains('G') && newChar == 'g') ||
-            (holdString.lastOption.contains('h') && newChar == 'H') ||
-            (holdString.lastOption.contains('H') && newChar == 'h') ||
-            (holdString.lastOption.contains('e') && newChar == 'E') ||
-            (holdString.lastOption.contains('E') && newChar == 'e')) holdString.substring(0, holdString.length - 1)
-        else
-          holdString.appended(newChar)
-      } else
+      if ((holdString.lastOption.contains('F') && newChar == 'f') ||
+          (holdString.lastOption.contains('f') && newChar == 'F') ||
+          (holdString.lastOption.contains('g') && newChar == 'G') ||
+          (holdString.lastOption.contains('G') && newChar == 'g') ||
+          (holdString.lastOption.contains('h') && newChar == 'H') ||
+          (holdString.lastOption.contains('H') && newChar == 'h') ||
+          (holdString.lastOption.contains('e') && newChar == 'E') ||
+          (holdString.lastOption.contains('E') && newChar == 'e')) holdString.substring(0, holdString.length - 1)
+      else
         holdString.appended(newChar)
     )
   }
