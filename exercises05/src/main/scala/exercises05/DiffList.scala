@@ -12,14 +12,8 @@ package exercises05
   * Метод toList применяет все накопленные операции и отдаёт итоговый список.
   */
 final class DiffList[A](calculate: List[A] => List[A]) {
-  def prepend(s: List[A]): DiffList[A] =
-    new DiffList[A](_ => {
-      s ++ calculate(Nil)
-    })
-  def append(s: List[A]): DiffList[A] =
-    new DiffList[A](_ => {
-      calculate(Nil) ++ s
-    })
+  def prepend(s: List[A]): DiffList[A]         = new DiffList[A](_ => { s ++ calculate(Nil) })
+  def append(s: List[A]): DiffList[A]          = new DiffList[A](_ => { calculate(Nil) ++ s })
   def withFilter(f: A => Boolean): DiffList[A] = new DiffList[A](_ => calculate(Nil).filter(f))
   def toList: List[A]                          = calculate(Nil)
 }

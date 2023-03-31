@@ -13,17 +13,37 @@ object Examples {
     * если rawUser.banned, то вернуть None
     * используйте for-comprehension
     */
+  def parsePassport(rawPassport: Option[String]): Option[Passport] = rawPassport match {
+    case None => None
+    case Some(str) =>
+      val passportData = str.split(" ")
+      if (passportData.length != 2)
+        None
+      else
+        (passportData(0).toIntOption, passportData(1).toIntOption) match {
+          case (Some(v1), Some(v2)) =>
+            if (passportData(0).length == 4 && passportData(1).length == 6) Some(Passport(v1, v2))
+            else None
+          case _ => None
+        }
+  }
+  def parseName(rawFirstName: Option[String], rawSecondName: Option[String]): Option[(String, String)] =
+    (rawFirstName, rawSecondName) match {
+      case (Some(n1), Some(n2)) => Some((n1, n2))
+      case _                    => None
+    }
+
   def transformToOption(rawUser: RawUser): Option[User] =
     for {
-      firstName  <- rawUser.firstName
-      secondName <- rawUser.secondName
-      idLong     <- rawUser.id.toLongOption
-      if !(firstName.isEmpty || secondName.isEmpty || rawUser.banned)
-      if rawUser.passport.isEmpty || rawUser.passport.contains("1234 567890")
+      userName <- parseName(rawUser.firstName, rawUser.secondName)
+      idLong   <- rawUser.id.toLongOption
+      parsedPassport = parsePassport(rawUser.passport)
+      if !(rawUser.passport.nonEmpty && parsedPassport.isEmpty)
+      if !rawUser.banned
     } yield User(
       idLong,
-      UserName(firstName, secondName, rawUser.thirdName),
-      if (rawUser.passport.isEmpty) None else Some(Passport(1234, 567890))
+      UserName(userName._1, userName._2, rawUser.thirdName),
+      parsedPassport
     )
 
   /**
@@ -41,17 +61,20 @@ object Examples {
     * но для того, чтобы for-comprehension заработал надо реализовать map и flatMap в Either
     */
   def transformToEither(rawUser: RawUser): Either[Error, User] =
-    transformToOption(rawUser) match {
-      case Some(user) => Right(user)
-      case None =>
-        if (rawUser.banned)
-          Left(Banned)
-        else if (rawUser.id.toLongOption.isEmpty)
-          Left(InvalidId)
-        else if (rawUser.firstName.isEmpty || rawUser.secondName.isEmpty)
-          Left(InvalidName)
-        else
+    for {
+      banned   <- { if (rawUser.banned) Left(Banned) else Right(rawUser.banned) }
+      idLong   <- Either.fromOption(rawUser.id.toLongOption)(InvalidId)
+      userName <- Either.fromOption(parseName(rawUser.firstName, rawUser.secondName))(InvalidName)
+      parsPas = parsePassport(rawUser.passport)
+      parsedPassport <- {
+        if (parsPas.isEmpty && rawUser.passport.nonEmpty)
           Left(InvalidPassport)
-    }
-
+        else
+          Right(parsPas)
+      }
+    } yield User(
+      idLong,
+      UserName(userName._1, userName._2, rawUser.thirdName),
+      parsedPassport
+    )
 }

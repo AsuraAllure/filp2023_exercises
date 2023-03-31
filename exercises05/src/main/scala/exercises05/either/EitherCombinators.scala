@@ -1,7 +1,5 @@
 package exercises05.either
 
-import scala.annotation.tailrec
-
 object EitherCombinators {
 
   sealed trait Either[+A, +B] {
@@ -38,29 +36,16 @@ object EitherCombinators {
     }
 
     def traverse[E, A, B](list: List[A])(f: A => Either[E, B]): Either[E, List[B]] = {
-      @tailrec
-      def traverseRec(list: List[A], resultList: List[B])(f: A => Either[E, B]): Either[E, List[B]] = list match {
-        case head :: tail =>
-          f(head) match {
-            case Left(get)  => Left(get)
-            case Right(get) => traverseRec(tail, get :: resultList)(f)
-          }
-        case _ => Right(resultList.reverse)
-      }
-      traverseRec(list, Nil)(f)
+      list.foldLeft(Right(Nil): Either[E, List[B]])((holdList, newElement) =>
+        (holdList, f(newElement)) match {
+          case (Right(hList), Right(el)) => Right(hList.appended(el))
+          case (Left(arg), _)            => Left(arg)
+          case (_, Left(arg))            => Left(arg)
+        }
+      )
     }
-
     def sequence[E, A](list: List[Either[E, A]]): Either[E, List[A]] = {
-      @tailrec
-      def sequenceRec(list: List[Either[E, A]], resultList: List[A]): Either[E, List[A]] = list match {
-        case head :: tail =>
-          head match {
-            case Left(get)    => Left(get)
-            case Right(value) => sequenceRec(tail, value :: resultList)
-          }
-        case _ => Right(resultList.reverse)
-      }
-      sequenceRec(list, Nil)
+      traverse(list)(identity)
     }
   }
 }
