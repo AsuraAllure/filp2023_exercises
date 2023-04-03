@@ -3,6 +3,10 @@ package exercises05.either
 object EitherCombinators {
 
   sealed trait Either[+A, +B] {
+    def toOption(): Option[B] = this match {
+      case Right(get) => Some(get)
+      case _          => None
+    }
     def map[C](f: B => C): Either[A, C] = this match {
       case Left(get)  => Left(get)
       case Right(get) => Right(f(get))

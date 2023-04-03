@@ -13,9 +13,9 @@ object Examples {
     * если rawUser.banned, то вернуть None
     * используйте for-comprehension
     */
-  def parsePassport(rawPassport: Option[String]): Option[Passport] = rawPassport match {
-    case None => None
-    case Some(str) =>
+  def parsePassport(rawPassport: String): Option[Passport] = rawPassport match {
+    case "" => None
+    case str =>
       val passportData = str.split(" ")
       if (passportData.length != 2)
         None
@@ -33,18 +33,7 @@ object Examples {
       case _                    => None
     }
 
-  def transformToOption(rawUser: RawUser): Option[User] =
-    for {
-      userName <- parseName(rawUser.firstName, rawUser.secondName)
-      idLong   <- rawUser.id.toLongOption
-      parsedPassport = parsePassport(rawUser.passport)
-      if !(rawUser.passport.nonEmpty && parsedPassport.isEmpty)
-      if !rawUser.banned
-    } yield User(
-      idLong,
-      UserName(userName._1, userName._2, rawUser.thirdName),
-      parsedPassport
-    )
+  def transformToOption(rawUser: RawUser): Option[User] = transformToEither(rawUser).toOption
 
   /**
     * если rawUser.firstName или rawUser.secondName == None, то функция должна вернуть Left(InvalidName)
@@ -65,7 +54,7 @@ object Examples {
       banned   <- { if (rawUser.banned) Left(Banned) else Right(rawUser.banned) }
       idLong   <- Either.fromOption(rawUser.id.toLongOption)(InvalidId)
       userName <- Either.fromOption(parseName(rawUser.firstName, rawUser.secondName))(InvalidName)
-      parsPas = parsePassport(rawUser.passport)
+      parsPas = rawUser.passport.flatMap(parsePassport)
       parsedPassport <- {
         if (parsPas.isEmpty && rawUser.passport.nonEmpty)
           Left(InvalidPassport)
