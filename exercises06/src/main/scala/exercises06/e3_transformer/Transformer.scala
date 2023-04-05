@@ -9,10 +9,26 @@ trait Transformer[A, B] {
 }
 
 object TransformerInstances {
-  implicit val transformer: Transformer[RawUser, User] = ???
+  implicit val transformer: Transformer[RawUser, User] = new Transformer[RawUser, User] {
+    def eitherToOption
+
+    override def toOption(a: RawUser): Option[User] = ???
+
+    override def toEither(a: RawUser): Either[Error, User] = ???
+  }
 }
 
-object TransformerSyntax {}
+object TransformerSyntax {
+  implicit class RawUserOps(rawUser: RawUser) {
+    def transformToOption(implicit transformer: Transformer[RawUser, User]): Option[User] = {
+      transformer.toOption(rawUser)
+    }
+
+    def transformToEither(implicit transformer: Transformer[RawUser, User]): Either[Error, User] = {
+      transformer.toEither(rawUser)
+    }
+  }
+}
 
 object Examples {
   import TransformerInstances._
