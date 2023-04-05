@@ -9,23 +9,44 @@ trait Transformer[A, B] {
 }
 
 object TransformerInstances {
-  implicit val transformer: Transformer[RawUser, User] = new Transformer[RawUser, User] {
-    def eitherToOption
+  implicit val transformerUser: Transformer[RawUser, User] = new Transformer[RawUser, User] {
 
-    override def toOption(a: RawUser): Option[User] = ???
+    override def toOption(a: RawUser): Option[User] = toEither(a) match {
+      case Left(_)      => None
+      case Right(value) => Some(value)
+    }
 
-    override def toEither(a: RawUser): Either[Error, User] = ???
+    override def toEither(rawUser: RawUser): Either[Error, User] =
+      for {
+        idLong <- {
+          rawUser.id.toLongOption match {
+            case None      => Left(InvalidId)
+            case Some(arg) => Right(arg)
+          }
+        }
+        firstName <- rawUser.firstName match {
+          case None        => Left(InvalidName)
+          case Some(value) => Right(value)
+        }
+        secondName <- rawUser.secondName match {
+          case None        => Left(InvalidName)
+          case Some(value) => Right(value)
+        }
+      } yield User(
+        idLong,
+        UserName(firstName, secondName, rawUser.thirdName)
+      )
   }
 }
 
 object TransformerSyntax {
-  implicit class RawUserOps(rawUser: RawUser) {
-    def transformToOption(implicit transformer: Transformer[RawUser, User]): Option[User] = {
-      transformer.toOption(rawUser)
+  implicit class RawUserOps[A](a: A) {
+    def transformToOption[B](implicit transformer: Transformer[A, B]): Option[B] = {
+      transformer.toOption(a)
     }
 
-    def transformToEither(implicit transformer: Transformer[RawUser, User]): Either[Error, User] = {
-      transformer.toEither(rawUser)
+    def transformToEither[B](implicit transformer: Transformer[A, B]): Either[Error, B] = {
+      transformer.toEither(a)
     }
   }
 }
