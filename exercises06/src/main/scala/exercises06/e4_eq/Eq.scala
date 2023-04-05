@@ -6,9 +6,33 @@ trait Eq[A] {
 
 object Eq {}
 
-object EqInstances {}
+object EqInstances {
+  implicit val intEq: Eq[Int]         = (a: Int, b: Int) => a == b
+  implicit val booleanEq: Eq[Boolean] = (a: Boolean, b: Boolean) => a == b
 
-object EqSyntax {}
+  implicit def listEq[A](implicit aEq: Eq[A]): Eq[List[A]] = (a: List[A], b: List[A]) => {
+    a.length == b.length &&
+      a.zip(b).forall { case (a, b) => aEq.eqv(a, b) }
+  }
+
+  implicit def optionEq[A](implicit aEq: Eq[A]): Eq[Option[A]] =
+    (op1: Option[A], op2: Option[A]) =>
+      (op1, op2) match {
+        case (None, None)             => true
+        case (Some(val1), Some(val2)) => aEq.eqv(val1, val2)
+        case _                        => false
+      }
+}
+
+object EqSyntax {
+  implicit class EqOps[A](a: A) {
+    def eqv(b: A)(implicit eq: Eq[A]): Boolean = eq.eqv(a, b)
+
+    def ===(b: A)(implicit eq: Eq[A]): Boolean = eq.eqv(a, b)
+
+    def !==(b: A)(implicit eq: Eq[A]): Boolean = !eq.eqv(a, b)
+  }
+}
 
 object Examples {
   import EqInstances._
