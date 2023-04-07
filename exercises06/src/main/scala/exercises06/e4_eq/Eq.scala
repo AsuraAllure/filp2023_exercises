@@ -1,25 +1,22 @@
 package exercises06.e4_eq
-
 trait Eq[A] {
   def eqv(a: A, b: A): Boolean
 }
-
 object Eq {}
-
 object EqInstances {
-  implicit val intEq: Eq[Int]         = (a: Int, b: Int) => a == b
-  implicit val booleanEq: Eq[Boolean] = (a: Boolean, b: Boolean) => a == b
+  implicit val intEq: Eq[Int]         = (a, b) => a == b
+  implicit val booleanEq: Eq[Boolean] = (a, b) => a == b
 
-  implicit def listEq[A](implicit aEq: Eq[A]): Eq[List[A]] = (a: List[A], b: List[A]) => {
+  import EqSyntax._
+  implicit def listEq[A: Eq]: Eq[List[A]] = (a, b) => {
     a.length == b.length &&
-      a.zip(b).forall { case (a, b) => aEq.eqv(a, b) }
+      a.zip(b).forall { case (a, b) => a.eqv(b) }
   }
-
-  implicit def optionEq[A](implicit aEq: Eq[A]): Eq[Option[A]] =
-    (op1: Option[A], op2: Option[A]) =>
+  implicit def optionEq[A: Eq]: Eq[Option[A]] =
+    (op1, op2) =>
       (op1, op2) match {
         case (None, None)             => true
-        case (Some(val1), Some(val2)) => aEq.eqv(val1, val2)
+        case (Some(val1), Some(val2)) => val1.eqv(val2)
         case _                        => false
       }
 }

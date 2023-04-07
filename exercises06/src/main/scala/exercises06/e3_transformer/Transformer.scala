@@ -11,19 +11,11 @@ trait Transformer[A, B] {
 object TransformerInstances {
   implicit val transformerUser: Transformer[RawUser, User] = new Transformer[RawUser, User] {
 
-    override def toOption(a: RawUser): Option[User] = toEither(a) match {
-      case Left(_)      => None
-      case Right(value) => Some(value)
-    }
+    override def toOption(a: RawUser): Option[User] = toEither(a).toOption
 
     override def toEither(rawUser: RawUser): Either[Error, User] =
       for {
-        idLong <- {
-          rawUser.id.toLongOption match {
-            case None      => Left(InvalidId)
-            case Some(arg) => Right(arg)
-          }
-        }
+        idLong <- rawUser.id.toLongOption.toRight(InvalidId)
         firstName <- rawUser.firstName match {
           case None        => Left(InvalidName)
           case Some(value) => Right(value)
