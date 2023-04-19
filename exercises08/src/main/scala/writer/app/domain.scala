@@ -6,7 +6,16 @@ object domain {
   case class Good(price: BigDecimal)
   case class Wallet(amount: BigDecimal)
   case class Transaction(price: BigDecimal)
+
   object Transaction {
-    implicit val semigroup: Semigroup[Transaction] = ???
+    implicit val semigroup: Semigroup[Transaction] =
+      (x: Transaction, y: Transaction) => Transaction(x.price + y.price)
+
+    implicit val monoid: Monoid[Transaction] = new Monoid[Transaction] {
+      def empty: Transaction = Transaction(BigDecimal(0))
+
+      def combine(x: Transaction, y: Transaction): Transaction =
+        semigroup.combine(x, y)
+    }
   }
 }
