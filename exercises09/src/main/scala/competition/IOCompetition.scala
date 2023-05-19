@@ -1,12 +1,10 @@
 package competition
 
-import cats.syntax.all._
 import cats.effect.{IO, IOApp}
+import cats.syntax.all._
 import competition.domain.ScenarioError.TopAuthorNotFound
 import service.TwitterService
 import twitter.domain._
-
-import scala.concurrent.Future
 
 /**
   * Конкурс! Кто наберет больше лайков под своим постом - тот победил
@@ -39,10 +37,11 @@ class IOCompetition(service: TwitterService[IO], methods: CompetitionMethods[IO]
 }
 
 object IOCompetitionRun extends IOApp {
-  import cats.effect.ExitCode
-  import scala.util.Random
-  import twitter.{LocalTwitterApi, TwitterApi}
   import _root_.service.TwitterServiceIO
+  import cats.effect.ExitCode
+  import twitter.{LocalTwitterApi, TwitterApi}
+
+  import scala.util.Random
 
   val api: TwitterApi = new LocalTwitterApi(Iterator.continually((Random.nextDouble() * 1000).toInt))
 

@@ -1,7 +1,7 @@
 package service
 
-import twitter.domain._
 import service.domain._
+import twitter.domain._
 
 trait TwitterService[F[_]] {
   def tweet(user: User, text: String): F[TweetId]

@@ -1,10 +1,9 @@
 package twitter
 
-import java.time.Instant
-
 import twitter.domain.TwitterError._
 import twitter.domain._
 
+import java.time.Instant
 import scala.collection.concurrent.TrieMap
 import scala.util.{Failure, Success, Try}
 

@@ -1,8 +1,8 @@
 package competition
 
 import cats.Monad
-import cats.syntax.all._
 import cats.instances.all._
+import cats.syntax.all._
 import service.TwitterService
 import twitter.domain._
 
