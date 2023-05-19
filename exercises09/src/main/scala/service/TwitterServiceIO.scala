@@ -4,8 +4,8 @@ import cats.effect.IO
 import cats.syntax.all._
 import service.domain.GetTweetResponse.{Found, NotFound}
 import service.domain._
-import twitter.domain.TwitterError._
 import twitter.TwitterApi
+import twitter.domain.TwitterError._
 import twitter.domain._
 
 import scala.util.{Failure, Success, Try}
@@ -36,10 +36,10 @@ class TwitterServiceIO(api: TwitterApi) extends TwitterService[IO] {
   }
 
   def createIO[T1, T2](
-                        f: (Try[T1] => Unit) => Unit,
-                        recovered: PartialFunction[Throwable, T2],
-                        converter: Try[T1] => Try[T2]
-                      ): IO[T2] = { IO.async_[T2](clb => f(a => clb(converter(a).toEither))).recover(recovered) }
+      f: (Try[T1] => Unit) => Unit,
+      recovered: PartialFunction[Throwable, T2],
+      converter: Try[T1] => Try[T2]
+  ): IO[T2] = { IO.async_[T2](clb => f(a => clb(converter(a).toEither))).recover(recovered) }
 
   def getTweets(ids: List[TweetId]): IO[GetTweetsResponse] = {
     ids
