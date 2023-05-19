@@ -1,6 +1,6 @@
 package crawler
 
-import HttpClient._
+import crawler.HttpClient._
 
 trait HttpClient[F[_]] {
   def get(url: URL): F[HttpResponse]

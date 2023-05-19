@@ -1,10 +1,10 @@
 package crawler
 
 import cats.effect.concurrent.Ref
-import crawler.HttpClient.{HttpResponse, URL}
 import cats.effect.{ContextShift, IO, Timer}
-import org.scalatest.wordspec.AnyWordSpec
+import crawler.HttpClient.{HttpResponse, URL}
 import org.scalatest.matchers.should.Matchers._
+import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.ExecutionContext
 
